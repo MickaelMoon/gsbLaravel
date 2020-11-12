@@ -14,17 +14,24 @@ class connexionController extends Controller
         $login = $request['login'];
         $mdp = $request['mdp'];
         $visiteur = PdoGsb::getInfosVisiteur($login,$mdp);
-        if(!is_array($visiteur)){
+        if($visiteur['role'] != 1){
+            if($visiteur['role'] != 0){
             $erreurs[] = "Login ou mot de passe incorrect(s)";
             return view('connexion')->with('erreurs',$erreurs);
+            }
+            else{
+                session(['visiteur' => $visiteur]);
+                return view('sommaire')->with('visiteur',session('visiteur'));
+            }
         }
         else{
-            session(['visiteur' => $visiteur]);
-            return view('sommaire')->with('visiteur',session('visiteur'));
+            session(['comptable' => $visiteur]);
+            return view('sommaire2')->with('comptable',session('comptable'));
         }
     } 
     function deconnecter(){
             session(['visiteur' => null]);
+            session(['comptable' => null]);
             return redirect()->route('chemin_connexion');
        
            
