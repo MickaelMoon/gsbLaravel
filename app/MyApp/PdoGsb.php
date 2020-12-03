@@ -36,12 +36,28 @@ class PdoGsb{
 */
 	public function getInfosVisiteur($login, $mdp){
 		$req = "select visiteur.id as id, visiteur.nom as nom, visiteur.prenom as prenom, visiteur.role as role from visiteur 
-        where visiteur.login='" . $login . "' and visiteur.mdp='" . $mdp ."'";
-    	$rs = $this->monPdo->query($req);
+        where visiteur.login = :login and sha1(visiteur.mdp)= sha1(:mdp) ";
+		$rs=$this->monPdo->prepare($req);
+		$rs->bindParam(':login',$login,PDO::PARAM_STR,20);
+		$rs->bindParam(':mdp',$mdp,PDO::PARAM_STR,20);
+		$rs->execute();
 		$ligne = $rs->fetch();
 		return $ligne;
 	}
 
+
+	public function getInfoFiche($ide){
+		$test = explode("-",$ide);
+		// dd($test);
+		$req="select * from fichefrais where idVisiteur = :id and mois = :mois";
+		$rs=$this->monPdo->prepare($req);
+		$rs->bindParam(':id',$test[0],PDO::PARAM_STR,20);
+		$rs->bindParam(':mois',$test[1],PDO::PARAM_STR,20);
+		$rs->execute();
+		$ligne = $rs->fetch();
+		//ddd($ligne);
+		return $ligne;
+	}
 
 /**
  * Retourne sous forme d'un tableau associatif toutes les lignes de frais au forfait
@@ -181,6 +197,38 @@ class PdoGsb{
 		}
 		return $lesMois;
 	}
+
+/**
+ * Retourne les fiches de frais avec leurs états
+ 
+ 
+*/	
+
+	public function getLesficheFraisEtat()
+	{
+		$req = "SELECT fichefrais.idVisiteur as idVisiteur, fichefrais.mois as mois, fichefrais.idEtat as idEtat, fichefrais.dateModif as dateModif, fichefrais.nbJustificatifs as nbJustificatifs, 
+		fichefrais.montantValide as montantValide, etat.libelle as libEtat FROM fichefrais inner join etat on fichefrais.idEtat = etat.id WHERE idEtat = 'VA'";
+		$res = $this->monPdo->query($req);
+		$laLigne = $res->fetchAll();
+		return $laLigne;
+	}
+
+/**
+ * 
+ *
+*/	
+
+public function updateEtatFicheFrais($dateModif,$ficheF)
+{
+	$test = explode("-",$ficheF);
+	$req = " UPDATE fichefrais set idEtat='RB', dateModif='$dateModif' WHERE idVisiteur='".$test[0]."' AND mois='".$test[1]."'";
+	$this->monPdo->query($req);
+}
+public function recupEtatFicheFraisUp($idVisiteur,$dateModif)
+{
+	$req = "SELECT idEtat FROM fichefrais WHERE idVisiteur='$idVisiteur' AND dateModif='$dateModif'";
+	$this->monPdo->exec($req);
+}
 /**
  * Retourne les informations d'une fiche de frais d'un visiteur pour un mois donné
  
@@ -202,6 +250,7 @@ class PdoGsb{
  * Modifie le champ idEtat et met la date de modif à aujourd'hui
  * @param $idVisiteur 
  * @param $mois sous la forme aaaamm
+ * MAUVAISE
  */
  
 	public function majEtatFicheFrais($idVisiteur,$mois,$etat){

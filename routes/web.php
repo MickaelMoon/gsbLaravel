@@ -36,6 +36,23 @@ Route::post('listeFrais',[
         'uses'=>'etatFraisController@voirFrais'
 ]);
 
+Route::get('paiementfichefrais',[
+        'as'=>'chemin_paiementfichefrais',
+        'uses'=>'etatFraisController@selectionnerEtatFicheFrais'
+]);
+
+Route::post('fichefraisrembourser',[
+        'as'=>'chemin_fichefraisrembourser',
+        'uses'=>'etatFraisController@ficheFraisRembourser'
+]);
+Route::get('editepdf',[
+        'as'=>'chemin_editepdf',
+        'uses'=>'etatFraisController@editepdf'
+]);
+Route::post('tableaupdf',[
+        'as'=>'chemin_tableaupdf',
+        'uses'=>'etatFraisController@validepdf'
+]);
         /*-------------------- Use case gérer les frais---------------------------*/
 
 Route::get('gererFrais',[

@@ -11,7 +11,7 @@
                       
                    </li>
                   <li class="smenu">
-                     <a href="" title="test ">test</a>
+                     <a href="{{ route('chemin_paiementfichefrais') }}" title="Suivre le paiement fiche de frais">Paiement fiche de frais</a>
                   </li>
                <li class="smenu">
                 <a href="{{ route('chemin_deconnexion') }}" title="Se déconnecter">Déconnexion</a>

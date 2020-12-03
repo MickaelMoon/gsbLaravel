@@ -184,6 +184,9 @@ select {
     font-family: "Trebuchet MS", sans-serif;
     font-size: 1em;
 }
+.bootstrap-select>.dropdown-toggle{
+    height:40px;
+}
 
 button {
     width: 60px;
